@@ -1,0 +1,56 @@
+#!/bin/bash
+
+CONDA_ENV_NAME=$1
+if [ -z "$CONDA_ENV_NAME" ]; then
+    echo "No conda environment given, please use a conda environment name as an argument when calling the script."
+    echo "Possible conda environments:"
+    conda env list
+    echo 'Syntax: "source /<path>/sss_environment <conda_name>"'
+    echo "ERROR"
+    return 1
+fi
+
+CUSTOM_CONDA_PATH="$HOME/miniconda3"
+
+# Load necessary modules
+echo "Loading modules..."
+module_list=("python/3.11.6-gcc-11.4.0" "gcc/13.2.0" "openmpi/4.1.6" "nano/7.2")
+for module in "${module_list[@]}"; do
+    module_name="${module%%/*}"
+    if [ $(module list 2>&1 | grep "$module_name/" | wc -l) -gt 0 ]; then
+        echo "    Unloaded previously loaded version of $module_name"
+        module unload $module_name
+    fi
+    echo "    Loading $module"
+    module load $module
+done
+
+# Initialize custom Conda environment
+echo "Initializing Conda environment..."
+if [ -f "$CUSTOM_CONDA_PATH/bin/conda" ]; then
+    eval "$($CUSTOM_CONDA_PATH/bin/conda shell.bash hook)"
+    if [ $? -ne 0 ]; then
+        echo "Error initializing Conda."
+        return 1
+    fi
+else
+    echo "Conda not found at $CUSTOM_CONDA_PATH. Please ensure Miniconda is installed."
+    return 1
+fi
+
+# Activate Conda environment
+echo "Activating Conda environment..."
+conda deactivate
+conda activate $CONDA_ENV_NAME
+
+# Check and install conda-build if necessary
+echo "Checking for conda-build..."
+if ! conda list conda-build &> /dev/null; then
+    echo "Installing conda-build..."
+    conda install -y conda-build
+fi
+
+# Set environment variables
+
+# Print message indicating environment has been loaded
+echo "Serpent environment loaded."

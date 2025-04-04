@@ -1,0 +1,27 @@
+include coreMaterials
+include fuel
+include detectors
+include geometry
+include burnup
+
+
+set acelib "/global/home/groups/co_nuclear/serpent/xsdata/endfb7/sss_endfb7u.xsdata"
+set declib "/global/home/groups/co_nuclear/serpent/xsdata/endfb7/sss_endfb7.dec"
+set nfylib "/global/home/groups/co_nuclear/serpent/xsdata/endfb7/sss_endfb7.nfy"
+set depout 2 2
+set Cerberus_verbosity 0
+set ures 1
+set power 280e6
+set pop 20000 50 5
+
+% Performance/memory
+set opti 1
+set gcu -1
+set memfrac 0.99
+set repro 0
+set shbuf 0 0
+set outp 100000
+
+set nbuf 1000
+
+set relfactor 0
